@@ -50,6 +50,6 @@ contract Invariant is StdInvariant, Test {
         // Δx = (β/(1-β)) * x
         // In a handler
         // Actual delta X == Δx = (β/(1-β)) * x
-        assertEq(handler.expectedDeltaY(), handler.actualDeltaX());
+        assertEq(handler.expectedDeltaY(), handler.actualDeltaY());
     }
 }

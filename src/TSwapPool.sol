@@ -244,9 +244,15 @@ contract TSwapPool is ERC20 {
         returns (uint256 inputAmount)
     {
         return ((inputReserves * outputAmount) * 10000) / ((outputReserves - outputAmount) * 997);
-        // The purpose of multiplying the numerator by 10000 and the denominator by 997 is likely to account for
-        // precision and rounding in the calculation.
+        // the 10000 is wrong and should be 1000.
+        // This is a high vulnerability
+        // The 997 / 10000 is the fee
+        // 91.3% fee???
+        // @audit high
+        // IMPACT: The fee is waaay too high!
+        // Likelyhood: HIGH  swapExactOutput() is one of the main functions of the protocol
     }
+    // @audit Where's the natspec?
 
     function swapExactInput(
         IERC20 inputToken,
@@ -258,7 +264,10 @@ contract TSwapPool is ERC20 {
         public
         revertIfZero(inputAmount)
         revertIfDeadlinePassed(deadline)
-        returns (uint256 output)
+        returns (
+            // @audit unused. low severity
+            uint256 output
+        )
     {
         uint256 inputReserves = inputToken.balanceOf(address(this));
         uint256 outputReserves = outputToken.balanceOf(address(this));
@@ -300,6 +309,13 @@ contract TSwapPool is ERC20 {
 
         inputAmount = getInputAmountBasedOnOutput(outputAmount, inputReserves, outputReserves);
 
+        // @audit no slippage protection!!
+        // Say I want 10 output Weth, and my input is DAI
+        // send the transaction, but the pool gets a massive transaction that changes the price.
+        // 10 output WETH -> 10,000,000,000 input DAI
+        // @audit: need max input amount
+        // also risk of MEV attack
+
         _swap(inputToken, inputAmount, outputToken, outputAmount);
     }
 
@@ -309,6 +325,9 @@ contract TSwapPool is ERC20 {
      * @return wethAmount amount of WETH received by caller
      */
     function sellPoolTokens(uint256 poolTokenAmount) external returns (uint256 wethAmount) {
+        // @audit; This is wrong!!  --> poolToken input
+        // probably should be: swapExactInput(minWethToReceive)
+
         return swapExactOutput(i_poolToken, i_wethToken, poolTokenAmount, uint64(block.timestamp));
     }
 

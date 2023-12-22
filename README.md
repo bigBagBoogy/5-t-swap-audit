@@ -1,6 +1,6 @@
 git init
 git add .
-git commit -m "1 run of manual review done"
+git commit -m "started"
 git push origin main
 
 <p align="center">

@@ -1,3 +1,7 @@
+## HIGH
+
+### [H-1] `TSwapPool::getInputAmountBasedOnOutput` Calulation for fees is incorrect. Fees end up waaay too high.
+
 ## MEDIUM
 
 ### [M-1] `TSwapPool::deposit` is missing deadline check causing transactions to complete even after deadline.

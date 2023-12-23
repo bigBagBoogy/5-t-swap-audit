@@ -35,16 +35,16 @@ contract PoC is Test {
 
     function testTooHighFeesInFunction() public {
         uint256 initialLiquidity = 100e18;
-        vm.statPrank(liquidityProvider);
+        vm.startPrank(liquidityProvider);
         weth.approve(address(pool), initialLiquidity);
         poolToken.approve(address(pool), initialLiquidity);
 
         pool.deposit({
-            wethToDeposit: initialLiquidity,    
+            wethToDeposit: initialLiquidity,
             minimumLiquidityTokensToMint: 0,
             maximumPoolTokensToDeposit: initialLiquidity,
-            deadline: uint64(block.timestamp)}
-        );
+            deadline: uint64(block.timestamp)
+        });
         vm.stopPrank();
 
         // user has 11 pool tokens
@@ -53,24 +53,27 @@ contract PoC is Test {
         poolToken.mint(someUser, userInitialPoolTokenBalance);
         vm.startPrank(someUser);
 
-        // User buys 1 weth from
+        // User buys 1 weth from the pool with 1 pool token
+        poolToken.approve(address(pool), type(uint256).max);
+        pool.swapExactOutput(poolToken, weth, 1, uint64(block.timestamp));
+
         // Initial liquidity was 1:1 so user should have paid 1~ pool token
         // However, it spent much more than that.
+        // below, assertLt means "less than"
         assertLt(poolToken.balanceOf(someUser), 1 ether);
-        vm.stopPrank;
+        vm.stopPrank();
 
         // The liquidity provider can rug all funds from the pool now,
         // including those deposited by the user
         vm.startPrank(liquidityProvider);
-        pool.withdraw({
-            poolToken.balanceOf(liquidityProvider),
-            minimumWethToReceive: 0,
-            maximumLiquidityToReceive: 0,
-            deadline: uint64(block.timestamp)}
+        pool.withdraw(
+            pool.balanceOf(liquidityProvider),
+            1, // minWethToWithdraw
+            1, // minPoolTokenToWithdraw
+            uint64(block.timestamp)
         );
-        vm.stopPrank();
 
-
-      
-
+        assertEq(weth.balanceOf(address(pool)), 0);
+        assertEq(poolToken.balanceOf(address(pool)), 0);
+    }
 }

@@ -2,6 +2,16 @@
 
 ### [H-1] `TSwapPool::getInputAmountBasedOnOutput` Calulation for fees is incorrect. Fees end up waaay too high.
 
+### [H-5] `TSwapPool::swap` the extra tokens given to users after every `swapCount` breaks the protocol invariant of `x * y = k`
+
+**Description:** The protocol follows a strict invariant of x \* y = k. Where:
+
+- `x`: The balace of the pool token
+- `y`: The balance of the Weth token
+- `k`: The constant product of the two balances
+
+This means, that whenever the balances change in the protocol, the ratio between the two amounts should remain constant, hence the k. However, this is broken due to the extra incentive in the \_swap function. Meaning that over time the protocol funds will be drained.
+
 ## MEDIUM
 
 ### [M-1] `TSwapPool::deposit` is missing deadline check causing transactions to complete even after deadline.

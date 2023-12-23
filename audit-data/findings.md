@@ -54,3 +54,14 @@ function deposit(
 **Proof of Concept**
 
 **Recommended Mitigation**
+
+## LOW
+
+### [L-1] `TSwapPool::LiquidityAdded` event has parameters out of order, causing the event to emit wrong information
+
+**Description:** When the `LiquidityAdded` event is emitted in the `TSwapPool::_addLiquidityMintAndTransfer` function it logs values in an incorrect order. The `poolTokensToDeposit` value should go in the third parameter position, whereas the `wethToDeposit` value should go second.
+
+```diff
+-   emit LiquidityAdded(msg.sender, poolTokensToDeposit, wethToDeposit);
++   emit LiquidityAdded(msg.sender, wethToDeposit, poolTokensToDeposit);
+```

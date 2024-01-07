@@ -2,7 +2,7 @@
 
 git init
 git add .
-git commit -m "[H-1]"
+git commit -m "[C-1]"
 git push origin main
 
 ### more git

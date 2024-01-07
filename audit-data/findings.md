@@ -12,6 +12,68 @@
 
 This means, that whenever the balances change in the protocol, the ratio between the two amounts should remain constant, hence the k. However, this is broken due to the extra incentive in the \_swap function. Meaning that over time the protocol funds will be drained.
 
+```javascript
+swap_count++;
+if (swap_count >= SWAP_COUNT_MAX) {
+  swap_count = 0;
+  outputToken.safeTransfer(msg.sender, 1_000_000_000_000_000_000);
+}
+```
+
+<details>
+<summary>Proof of Code</summary>
+Paste the followincode into `TSwapPoolTest.t.sol`
+
+```javascript
+    function testSwapBreaksInvariant() public {
+        vm.startPrank(liquidityProvider);
+        weth.approve(address(pool), 100e18);
+        poolToken.approve(address(pool), 100e18);
+        pool.deposit(100e18, 100e18, 100e18, uint64(block.timestamp));
+        vm.stopPrank();
+
+        uint256 outputWeth = 1e17;
+
+        vm.startPrank(user);
+        poolToken.approve(address(pool), type(uint256).max);
+        poolToken.mint(user, 10e18);
+        pool.swapExactOutput(poolToken, weth, outputWeth, uint64(block.timestamp));
+        pool.swapExactOutput(poolToken, weth, outputWeth, uint64(block.timestamp));
+        pool.swapExactOutput(poolToken, weth, outputWeth, uint64(block.timestamp));
+        pool.swapExactOutput(poolToken, weth, outputWeth, uint64(block.timestamp));
+        pool.swapExactOutput(poolToken, weth, outputWeth, uint64(block.timestamp)); //5
+        pool.swapExactOutput(poolToken, weth, outputWeth, uint64(block.timestamp));
+        pool.swapExactOutput(poolToken, weth, outputWeth, uint64(block.timestamp));
+        pool.swapExactOutput(poolToken, weth, outputWeth, uint64(block.timestamp));
+        pool.swapExactOutput(poolToken, weth, outputWeth, uint64(block.timestamp));
+        int256 startingY = int256(weth.balanceOf(address(pool)));
+        int256 expectedDeltaY = int256(-1) * int256(outputWeth);
+        // and then the tenth time:
+        pool.swapExactOutput(poolToken, weth, outputWeth, uint64(block.timestamp));
+        vm.stopPrank();
+
+        uint256 endingY = weth.balanceOf(address(pool));
+        int256 actualDeltaY = int256(endingY) - int256(startingY);
+        assertEq(actualDeltaY, expectedDeltaY);
+    }
+    // output:    emit log(val: "Error: a == b not satisfied [int]")
+    // ├─ emit log_named_int(key: "      Left", val: -1100000000000000000 [-1.1e18])
+    // ├─ emit log_named_int(key: "     Right", val: -100000000000000000 [-1e17])
+
+```
+
+</details>
+**Recommended Mitigation** Remove the extra incentive mechanism. If you want to keep this in, we should account for the change in the x \* y = k protocol invariant. Or, we should set aside tokens in the same way we do with fees.
+
+```diff
+-        swap_count++;
+-        // Fee-on-transfer
+-        if (swap_count >= SWAP_COUNT_MAX) {
+-            swap_count = 0;
+-            outputToken.safeTransfer(msg.sender, 1_000_000_000_000_000_000);
+-        }
+```
+
 ## MEDIUM
 
 ### [M-1] `TSwapPool::deposit` is missing deadline check causing transactions to complete even after deadline.

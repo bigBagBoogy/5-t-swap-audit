@@ -2,7 +2,7 @@
 
 git init
 git add .
-git commit -m "start 2nd invariant"
+git commit -m "natspec 2nd invariant"
 git push origin main
 
 ### more git

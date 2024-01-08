@@ -2,7 +2,7 @@
 
 git init
 git add .
-git commit -m "[C-1]"
+git commit -m "start 2nd invariant"
 git push origin main
 
 ### more git

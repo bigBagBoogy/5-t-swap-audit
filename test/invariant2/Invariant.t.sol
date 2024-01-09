@@ -6,14 +6,16 @@ import { StdInvariant } from "forge-std/StdInvariant.sol";
 import { ERC20Mock } from "test/mocks/ERC20Mock.sol"; // we can mint multiple different tokens on this.
 import { PoolFactory } from "src/PoolFactory.sol"; // the factory can create the TSwapPool
 import { TSwapPool } from "src/TSwapPool.sol";
+import { Handler } from "./Handler.t.sol";
 
 contract Invariant is StdInvariant, Test {
     // these pools have 2 assets
-    ERC20Mock poolToken; // this represents any arbitrarily erc20 token
-    ERC20Mock weth;
+    ERC20Mock public poolToken; // this represents any arbitrarily erc20 token
+    ERC20Mock public weth;
 
-    PoolFactory factory; // the factory can create multiple pools
-    TSwapPool pool; // we'll make this our pool for poolToken / WETH
+    PoolFactory public factory; // the factory can create multiple pools
+    TSwapPool public pool; // we'll make this our pool for poolToken / WETH
+    Handler public handler;
 
     int256 constant STARTING_X_100e18_POOLTOKEN = 100e18; // starting ERC20 / poolToken balance
     int256 constant STARTING_Y_50e18_WETH = 50e18; // starting WETH balance
@@ -43,9 +45,15 @@ contract Invariant is StdInvariant, Test {
             uint256(STARTING_X_100e18_POOLTOKEN),
             uint64(block.timestamp)
         );
+        handler = new Handler(pool);
+        bytes4[] memory selectors = new bytes4[](2);
+        selectors[0] = handler.deposit.selector;
+        selectors[1] = handler.swapPoolTokenForWethBasedOnOutputWeth.selector;
+        targetSelector(FuzzSelector({ addr: address(handler), selectors: selectors }));
+        targetContract(address(handler));
     }
 
-    function statefulFuzz_constantProductFormulaStaysTheSame() public {
+    function statefulFuzz_constantProductFormulaStaysTheSameII() public {
         // assert ???
         // The change in the poolsize of weth should follow this function:
         // x⋅y=k   or  ∆x = (β/(1-β)) * x
@@ -56,5 +64,6 @@ contract Invariant is StdInvariant, Test {
         // in the handler we'll create a variable actual delta x == ∆x = (β/(1-β)) * x
         // or, actual delta x == expected delta x
         // so above will be our assert
+        assertEq(handler.actualDeltaY_weth(), handler.expectedDeltaY_weth());
     }
 }

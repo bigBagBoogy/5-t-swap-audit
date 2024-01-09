@@ -2,7 +2,7 @@
 
 git init
 git add .
-git commit -m "building handler"
+git commit -m "finished handler"
 git push origin main
 
 ### more git

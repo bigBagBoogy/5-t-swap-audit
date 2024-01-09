@@ -48,10 +48,13 @@ contract Invariant is StdInvariant, Test {
     function statefulFuzz_constantProductFormulaStaysTheSame() public {
         // assert ???
         // The change in the poolsize of weth should follow this function:
-        // x⋅y=k    or  ∆x = (β/(1-β)) * x
+        // x⋅y=k   or  ∆x = (β/(1-β)) * x
         //  It's quite complex, but basically everytime the function `swapExactInput`,
         // we're using the formula: ∆x = (β/(1-β)) * x
         // So inside this function we'll check on the balance of weth and poolToken before and after the swap.
         // We'll use the handler, to mimic this same effect.
+        // in the handler we'll create a variable actual delta x == ∆x = (β/(1-β)) * x
+        // or, actual delta x == expected delta x
+        // so above will be our assert
     }
 }

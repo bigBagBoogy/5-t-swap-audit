@@ -50,3 +50,11 @@ For a swap where a user wants to trade Δx of token X for Δy of token Y, the fo
 This updated product reflects the new quantities of the tokens after the trade. The Uniswap algorithm then calculates the amounts Δx and Δy based on this formula.
 
 It's important to note that as trades occur, the price of the tokens in the pool can change, and the constant product formula ensures that the market adjusts accordingly. The AMM mechanism allows for decentralized trading without the need for a traditional order book.
+
+## What trips me up in this audit from time to time:
+When adding liquidity to the pool through the deposit function, 
+there is nothing taken out (it's not a swap).
+The Liquidity provider gets minted LP tokens as an "I Owe You"
+
+## the swapping:
+Sending in the poolToken and taking WETH out

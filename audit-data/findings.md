@@ -124,6 +124,17 @@ This should be: `swapExactInput(minWethToReceive)`
 -     error PoolFactory__PoolDoesNotExist(address tokenAddress);
 ```
 
+
+### [I-2] `PoolFactory::constructor` wethToken is lacking zero address check.
+```diff
+        constructor(address wethToken) {
++       if(wethToken == address(0)) {
+             revert();
+        i_wethToken = IERC20(wethToken);
+        }
+     }   
+```
+
 **Description**
 
 **Impact:**

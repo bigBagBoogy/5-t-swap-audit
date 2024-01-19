@@ -107,7 +107,8 @@ function deposit(
 
 ### [s-#] TITLE (root cause + impact)
 
-**Description**
+**Description** the function TSwapPool::sellPoolTokens internally calls swapExactOutput()
+This should be: `swapExactInput(minWethToReceive)`
 
 **Impact:**
 

@@ -45,15 +45,22 @@ contract PoolFactory {
     /*//////////////////////////////////////////////////////////////
                            EXTERNAL FUNCTIONS
     //////////////////////////////////////////////////////////////*/
+    // running this function will create a mapping of tokenAddress => poolAddress
     function createPool(address tokenAddress) external returns (address) {
+        // explainer: we need to check if the pool already exists
+        // a pool that does not yet exist will come back as address(0)
+        // so if: != address(0), then the pool already exists, and we revert
         if (s_pools[tokenAddress] != address(0)) {
             revert PoolFactory__PoolAlreadyExists(tokenAddress);
         }
+        // e: next line creates a name like: T-Swap GoodCoin or T-Swap PuppyToken
         string memory liquidityTokenName = string.concat("T-Swap ", IERC20(tokenAddress).name());
+        // e: next line should create a symbol like: ts DAI or T-Swap PT
+        // @audit this should be .symbol not .name
         string memory liquidityTokenSymbol = string.concat("ts", IERC20(tokenAddress).name());
         TSwapPool tPool = new TSwapPool(tokenAddress, i_wethToken, liquidityTokenName, liquidityTokenSymbol);
-        s_pools[tokenAddress] = address(tPool);
-        s_tokens[address(tPool)] = tokenAddress;
+        s_pools[tokenAddress] = address(tPool); // mapping created
+        s_tokens[address(tPool)] = tokenAddress; // same, but reverse mapping created
         emit PoolCreated(tokenAddress, address(tPool));
         return address(tPool);
     }

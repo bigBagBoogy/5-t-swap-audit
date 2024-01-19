@@ -2,7 +2,7 @@
 
 git init
 git add .
-git commit -m "finished handler"
+git commit -m "added finding"
 git push origin main
 
 ### more git

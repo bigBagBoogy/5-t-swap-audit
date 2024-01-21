@@ -207,7 +207,17 @@ https://github.com/Cyfrin/audit-report-templating
 
 ## FAQ:
 
-Certain characters like ⠆ do not work with pandoc, and you'll need to remove them to generate your final report.
+Certain characters like ├─⠆ do not work with pandoc, and you'll need to remove them to generate your final report.  The error will then be:   
+```java
+Error producing PDF.
+! Missing number, treated as zero.
+<to be read again> 
+                   \protect 
+l.403 \vspace\*
+```
+
+### We've gotten a script to scan for unsupported utf-8 characters:
+run with:    python3 python-scanner.py
 
 
 # copy the report to your downloads folder in windows

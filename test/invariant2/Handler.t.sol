@@ -20,7 +20,7 @@ contract Handler is Test {
     int256 public expectedDeltaY_weth; //  change in toke balances
     int256 public expectedDeltaX_poolToken;
 
-    int256 public actualDeltaY_weth; //  change in toke balances
+    int256 public actualDeltaY_weth; //  change in token balances
     int256 public actualDeltaX_poolToken;
 
     constructor(TSwapPool _pool) {

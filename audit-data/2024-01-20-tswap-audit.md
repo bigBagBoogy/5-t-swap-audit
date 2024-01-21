@@ -1,8 +1,115 @@
-## HIGH
+---
+title: Protocol Audit Report
+author: Cyfrin.io
+date: March 7, 2023
+header-includes:
+  - \usepackage{titling}
+  - \usepackage{graphicx}
+---
+
+\begin{titlepage}
+\centering
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.5\textwidth]{logo.pdf}
+\end{figure}
+\vspace\*{2cm}
+{\Huge\bfseries Protocol Audit Report\par}
+\vspace{1cm}
+{\Large Version 1.0\par}
+\vspace{2cm}
+{\Large\itshape Cyfrin.io\par}
+\vfill
+{\large \today\par}
+\end{titlepage}
+
+\maketitle
+
+<!-- Your report starts here! -->
+
+Prepared by: [Cyfrin](https://cyfrin.io)
+Lead Auditors:
+
+- xxxxxxx
+
+# Table of Contents
+
+- [Table of Contents](#table-of-contents)
+- [Protocol Summary](#protocol-summary)
+- [Disclaimer](#disclaimer)
+- [Risk Classification](#risk-classification)
+  - [Files Summary](#files-summary)
+  - [Files Details](#files-details)
+  - [Issue Summary](#issue-summary)
+- [High](#high)
+    - [\[H-1\] `TSwapPool::getInputAmountBasedOnOutput` Calulation for fees is incorrect. Fees end up waaay too high.](#h-1-tswappoolgetinputamountbasedonoutput-calulation-for-fees-is-incorrect-fees-end-up-waaay-too-high)
+    - [\[H-2\] No slippage protection! `TSwapPool::swapExactOutput`.](#h-2-no-slippage-protection-tswappoolswapexactoutput)
+    - [\[H-3\] `TSwapPool::swap` the extra tokens given to users after every `swapCount` breaks the protocol invariant of `x * y = k`](#h-3-tswappoolswap-the-extra-tokens-given-to-users-after-every-swapcount-breaks-the-protocol-invariant-of-x--y--k)
+  - [MEDIUM](#medium)
+    - [\[M-1\] `TSwapPool::deposit` is missing deadline check causing transactions to complete even after deadline.](#m-1-tswappooldeposit-is-missing-deadline-check-causing-transactions-to-complete-even-after-deadline)
+    - [\[M-2\] Rebase, fee-on-transfer and ERC777 tokens break protocol invariant](#m-2-rebase-fee-on-transfer-and-erc777-tokens-break-protocol-invariant)
+  - [LOW](#low)
+    - [\[L-1\] `TSwapPool::LiquidityAdded` event has parameters out of order, causing the event to emit wrong information](#l-1-tswappoolliquidityadded-event-has-parameters-out-of-order-causing-the-event-to-emit-wrong-information)
+  - [Informationals](#informationals)
+    - [\[I-1\] `PoolFactory::PoolFactory__PoolDoesNotExist` is not used and should be removed](#i-1-poolfactorypoolfactory__pooldoesnotexist-is-not-used-and-should-be-removed)
+    - [\[I-2\] `PoolFactory::constructor` wethToken is lacking zero address check.](#i-2-poolfactoryconstructor-wethtoken-is-lacking-zero-address-check)
+    - [\[I-3\] `PoolFactory::createPool` should use `symbol()` in stead of `name()`](#i-3-poolfactorycreatepool-should-use-symbol-in-stead-of-name)
+
+# Protocol Summary
+
+Protocol does X, Y, Z
+
+# Disclaimer
+
+The YOUR_NAME_HERE team makes all effort to find as many vulnerabilities in the code in the given time period, but holds no responsibilities for the findings provided in this document. A security audit by the team is not an endorsement of the underlying business or product. The audit was time-boxed and the review of the code was solely on the security aspects of the Solidity implementation of the contracts.
+
+# Risk Classification
+
+|            |        | Impact |        |     |
+| ---------- | ------ | ------ | ------ | --- |
+|            |        | High   | Medium | Low |
+|            | High   | H      | H/M    | M   |
+| Likelihood | Medium | H/M    | M      | M/L |
+|            | Low    | M      | M/L    | L   |
+
+We use the [CodeHawks](https://docs.codehawks.com/hawks-auditors/how-to-evaluate-a-finding-severity) severity matrix to determine severity. See the documentation for more details.
+
+
+## Files Summary
+
+| Key | Value |
+| --- | --- |
+| .sol Files | 2 |
+| Total nSLOC | 56 |
+
+
+## Files Details
+
+| Filepath | nSLOC |
+| --- | --- |
+| src/PoolFactory.sol | 6 |
+| src/TSwapPool.sol | 50 |
+| **Total** | **56** |
+
+
+## Issue Summary
+
+| Severity | Number of issues found |
+| -------- | ---------------------- |
+| High     | 3                     |
+| Medium   | 2                      |
+| Low      | 1                      |
+| Info     | 3                      |
+| Total    | 9                      |
+
+
+
+
+# High
 
 ### [H-1] `TSwapPool::getInputAmountBasedOnOutput` Calulation for fees is incorrect. Fees end up waaay too high.
 
-### [H-3] No slippage protection! `TSwapPool::swapExactOutput`. 
+### [H-2] No slippage protection! `TSwapPool::swapExactOutput`. 
 
 **description** The `swapExactOutput` function doen not offer any slippage protection.
 You can't just walk up to a protocol and say; "Here's 10 Weth, give me whatever amount of DAI I can get" This will leave you open to MEV attacks and price oracle manipulation.
@@ -10,7 +117,7 @@ You can't just walk up to a protocol and say; "Here's 10 Weth, give me whatever 
 **impact** causes users to potentially receive way fewer tokens.
 An MEV attack can explode this vulnerability to clitical.
 
-### [H-5] `TSwapPool::swap` the extra tokens given to users after every `swapCount` breaks the protocol invariant of `x * y = k`
+### [H-3] `TSwapPool::swap` the extra tokens given to users after every `swapCount` breaks the protocol invariant of `x * y = k`
 
 **Description:** The protocol follows a strict invariant of x \* y = k. Where:
 
@@ -89,11 +196,6 @@ Paste the followincode into `TSwapPoolTest.t.sol`
 **Description:** The `deposit` function accepts a deadline parameter, which according to the documentation is for: "The deadline for the transaction to be completed by" However this parameter is never used.
 As a consequence, operations that add liquidity that to the pool might be executed at unexpected times. In market conditions, where the deposit rate is unfavorable.
 
-<!-- MEV attacks-->
-
-**Impact:**
-
-**Proof of Concept**
 
 **Recommended Mitigation** Consider making the following chsnges to the function:
 
@@ -117,17 +219,22 @@ function deposit(
 The fee on transfer in this case with the liquidityTokens, pays out so much that the 
 x * y = k formula breaks.
 
-**Impact:**
+## LOW
 
-**Proof of Concept**
+### [L-1] `TSwapPool::LiquidityAdded` event has parameters out of order, causing the event to emit wrong information
 
-**Recommended Mitigation**
+**Description:** When the `LiquidityAdded` event is emitted in the `TSwapPool::_addLiquidityMintAndTransfer` function it logs values in an incorrect order. The `poolTokensToDeposit` value should go in the third parameter position, whereas the `wethToDeposit` value should go second.
 
-**Informationals**
+```diff
+-   emit LiquidityAdded(msg.sender, poolTokensToDeposit, wethToDeposit);
++   emit LiquidityAdded(msg.sender, wethToDeposit, poolTokensToDeposit);
+```
 
 
 
-**Informationals**
+
+
+## Informationals
 
 
 
@@ -156,13 +263,3 @@ x * y = k formula breaks.
 
 
 
-## LOW
-
-### [L-1] `TSwapPool::LiquidityAdded` event has parameters out of order, causing the event to emit wrong information
-
-**Description:** When the `LiquidityAdded` event is emitted in the `TSwapPool::_addLiquidityMintAndTransfer` function it logs values in an incorrect order. The `poolTokensToDeposit` value should go in the third parameter position, whereas the `wethToDeposit` value should go second.
-
-```diff
--   emit LiquidityAdded(msg.sender, poolTokensToDeposit, wethToDeposit);
-+   emit LiquidityAdded(msg.sender, wethToDeposit, poolTokensToDeposit);
-```

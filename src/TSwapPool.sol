@@ -152,6 +152,8 @@ contract TSwapPool is ERC20 {
         private
     {
         _mint(msg.sender, liquidityTokensToMint);
+        // @audit this is backwards! should be  wethToDeposit, poolTokensToDeposit
+        // impact low
         emit LiquidityAdded(msg.sender, poolTokensToDeposit, wethToDeposit);
 
         // Interactions

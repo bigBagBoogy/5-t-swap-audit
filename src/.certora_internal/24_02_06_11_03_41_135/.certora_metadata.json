@@ -1,0 +1,25 @@
+{
+    "CLI_version": "6.3.1",
+    "branch": "main",
+    "conf": {
+        "files": [
+            "TSwapPool.sol"
+        ],
+        "msg": "testInvalidToken rule",
+        "process": "emv",
+        "verify": "TSwapPool:TSwapPool.spec"
+    },
+    "cwd_relative": "src",
+    "dirty": false,
+    "origin": "https://github.com/bigBagBoogy/5-t-swap-audit.git",
+    "raw_args": [
+        "/home/maarten/.local/bin/certoraRun",
+        "TSwapPool.sol",
+        "--verify",
+        "TSwapPool:TSwapPool.spec",
+        "--msg",
+        "testInvalidToken rule"
+    ],
+    "revision": "640074dcabf821bd7b559d9200833d603d07f9e0",
+    "timestamp": "1707210221.483842"
+}

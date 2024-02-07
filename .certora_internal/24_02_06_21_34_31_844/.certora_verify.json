@@ -1,8 +1,0 @@
-{
-    "importFilesToOrigRelpaths": {},
-    "primary_contract": "TSwapPool",
-    "specfile": "src/TSwapPool.spec",
-    "specfileOrigRelpath": "src/TSwapPool.spec",
-    "specfilesToImportDecls": {},
-    "type": "spec"
-}

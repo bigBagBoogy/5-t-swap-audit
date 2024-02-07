@@ -30,16 +30,22 @@
 
  methods
  {
-    function sellPoolTokens(uint256) external returns (uint256) // returns weth amount
+    function sellPoolTokens(uint256) external returns (uint256); // returns weth amount
     function balanceOf(address) external returns (uint) envfree;
-    function getPoolToken() external view returns (address) envfree; // gets addr of token.
+    function getPoolToken() external returns (address) envfree; // gets addr of token.
  }
 // line 330
  rule sellPoolTokensIntegrity(method f) {
 
+    address inputToken;
+    address outputToken;
+    uint outputTokenAmt = balanceOf(outputToken);
+    uint inputTokenAmt = balanceOf(inputToken);
+
     // Precondition  start with nothing
     require balanceOf(outputToken) == 0;
-    require balanceOf(inputToken) == 0;
+    require balanceOf(inputToken) == 0; // since we start with no inputTokens,
+    // no function should change state in such a way that we end up with outputTokens.
 
     mathint outputToken_before = balanceOf(outputToken);
 
@@ -50,6 +56,10 @@
     mathint outputToken_after = balanceOf(outputToken);
 
        // Operations on mathints can never overflow nor underflow
-    assert inputToken_after == 0 => outputToken == 0,
-        "balance of address 0 is not zero";
+    assert balanceOf(inputToken) == 0 => outputToken_after == 0,
+        "error no outputTokens should have been here";
  }
+
+
+ ///   TODO:   check back on the video about vacuous rules and run a check 
+ //  on this test.    https://www.youtube.com/watch?v=csTe6ub3Jwg&list=PLKtu7wuOMP9XHbjAevkw2nL29YMubqEFj&index=10

@@ -2,7 +2,7 @@
 
 git init
 git add .
-git commit -m "added certora"
+git commit -m "added rule"
 git push origin main
 
 ### more git

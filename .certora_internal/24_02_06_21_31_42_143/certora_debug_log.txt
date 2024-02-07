@@ -1,0 +1,19 @@
+Saving last configuration file to .certora_internal/24_02_06_21_31_42_143/run.conf
+Package @openzeppelin/contracts/ is given a path ending with a `/`, which could confuse solc: lib/openzeppelin-contracts/contracts/
+There is no TAC file. Going to script EVMVerifier/certoraBuild.py to main_with_args()
+Creating dir /home/maarten/audits/cyfrin/5-t-swap-audit/.certora_internal/24_02_06_21_31_42_143/.certora_config
+In /home/maarten/audits/cyfrin/5-t-swap-audit/src/TSwapPool.spec, found the imports: []
+copying spec file /home/maarten/audits/cyfrin/5-t-swap-audit/src/TSwapPool.spec to /home/maarten/audits/cyfrin/5-t-swap-audit/.certora_internal/24_02_06_21_31_42_143/.certora_sources/.0_TSwapPool.spec.spec
+writing /home/maarten/audits/cyfrin/5-t-swap-audit/.certora_internal/24_02_06_21_31_42_143/.certora_verify.json
+Path to typechecker is /home/maarten/.local/lib/python3.10/site-packages/certora_jars/Typechecker.jar
+running ['java', '-jar', '/home/maarten/.local/lib/python3.10/site-packages/certora_jars/Typechecker.jar', '-buildDirectory', '/home/maarten/audits/cyfrin/5-t-swap-audit/.certora_internal/24_02_06_21_31_42_143']
+Failed to compile spec file in /home/maarten/audits/cyfrin/5-t-swap-audit/.certora_internal/24_02_06_21_31_42_143
+Found errors
+[main] ERROR ALWAYS - Error in spec file (TSwapPool.spec:36:38): Since CVL 2, methods block entries must end with `;`
+[main] ERROR ALWAYS - Error in spec file (TSwapPool.spec:36:47): Syntax error: unexpected token near `view`
+[main] ERROR ALWAYS - Error in spec file (TSwapPool.spec:44:5): Syntax error: unexpected token near `assert`
+build failed
+Failure traceback: 
+CertoraUserInputError: CVL specification syntax check failed
+Encountered an error running Certora Prover:
+CVL specification syntax check failed

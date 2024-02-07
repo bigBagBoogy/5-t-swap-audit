@@ -1,47 +1,55 @@
-// @spec: TSwapPool__InvalidToken error should throw
-// invariant: cannot swap with invalid token
-// swapExactInput calls private function _swap, which internally checks for 
-// a valid token, so we'll target swapExactInput.
 // methods {
-//     function swapExactInput(
-//         e,
-//         IERC20 inputToken,
-//         uint256 inputAmount,
-//         IERC20 outputToken,
-//         uint256 minOutputAmount,
-//         uint64 deadline
-//     ) public returns (uint256);
-//     function _isUnknown(IERC20 token) private view returns (bool) 
+//     function isUnknown(address) external returns bool;
+//     function inputToken() external returns address;
 // }
-//  rule cannotSwapInvalidToken(IERC20 inputToken,
-//         uint256 inputAmount,
-//         IERC20 outputToken,
-//         uint256 minOutputAmount,
-//         uint64 deadline) {
-//             env e;
-//             bool isUnknown = _isUnknown(IERC20 inputToken); // true means invalid token
-//             swapExactInput@withrevert(e, inputToken, inputAmount, outputToken, minOutputAmount, deadline);
-//         assert lastReverted;
-//         }
 
 
+// rule testInvalidToken(method f) {
+//     // Precondition
+//     require !isUnknown() <=> inputToken() == i_wethToken() || inputToken() == i_poolToken();
 
-// should we want to simplify this rule, we could just focus on:
-//  assert !isUnknown <=> outputToken == i_wethToken || outputToken == i_poolToken;
+//     env e;
+//     calldataarg args;
+//     f(e, args);
+    
+//     assert (
+//         !isUnknown() <=> inputToken() == i_wethToken() || inputToken() == i_poolToken(),
+//         "foreign token comes into the protocol"
+//     );
+// }
 
-// should we test this parametric? so run all, and see if ever the assertion breaks and why.
-// to run from CLI:  certoraRun TSwapPool.sol --verify TSwapPool:TSwapPool.spec --msg "testInvalidToken rule"
+/**
+ * # ERC20 Spec written by bigBagBoogy
+ * sellPoolTokensIntegrity: if outputAmount > 0 => inputAmount > 0 
+ * This should fail if inputAmount == 0
+ *
+ * To run, execute the following command in terminal:
+ * 
+ * certoraRun ERC20.sol --verify ERC20:ERC20.spec
+ */
 
-rule testInvalidToken(method f) {
+ methods
+ {
+    function sellPoolTokens(uint256) external returns (uint256) // returns weth amount
+    function balanceOf(address) external returns (uint) envfree;
+    function getPoolToken() external view returns (address) envfree; // gets addr of token.
+ }
+// line 330
+ rule sellPoolTokensIntegrity(method f) {
+
+    // Precondition  start with nothing
+    require balanceOf(outputToken) == 0;
+    require balanceOf(inputToken) == 0;
+
+    mathint outputToken_before = balanceOf(outputToken);
+
     env e;  // The env for f
     calldataarg args;  // Any possible arguments for f
     f(e, args);  // Calling the contract method f
 
-    assert !isUnknown <=> outputToken == i_wethToken || outputToken == i_poolToken;
-}
+    mathint outputToken_after = balanceOf(outputToken);
 
-
-
-
-
-
+       // Operations on mathints can never overflow nor underflow
+    assert inputToken_after == 0 => outputToken == 0,
+        "balance of address 0 is not zero";
+ }

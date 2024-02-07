@@ -1,0 +1,8 @@
+{
+    "importFilesToOrigRelpaths": {},
+    "primary_contract": "TSwapPool",
+    "specfile": "/home/maarten/audits/cyfrin/5-t-swap-audit/src/TSwapPool.spec",
+    "specfileOrigRelpath": "src/TSwapPool.spec",
+    "specfilesToImportDecls": {},
+    "type": "spec"
+}

@@ -1,0 +1,26 @@
+{
+    "CLI_version": "6.3.1",
+    "branch": "main",
+    "conf": {
+        "files": [
+            "src/TSwapPool.sol"
+        ],
+        "msg": "Verification of TSwapPool",
+        "packages": [
+            "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/"
+        ],
+        "process": "emv",
+        "rule_sanity": "basic",
+        "verify": "TSwapPool:src/TSwapPool.spec",
+        "wait_for_results": "all"
+    },
+    "cwd_relative": ".",
+    "dirty": true,
+    "origin": "https://github.com/bigBagBoogy/5-t-swap-audit.git",
+    "raw_args": [
+        "/home/maarten/.local/bin/certoraRun",
+        "src/TSwapPool.conf"
+    ],
+    "revision": "49ddbe49d221bfd36e0d6bb4afc0514715f6ad42",
+    "timestamp": "1707247606.258108"
+}
